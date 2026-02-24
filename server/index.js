@@ -1,0 +1,35 @@
+const express = require("express");
+const app = express();
+const cors = require("cors");
+
+const news = require("./routes/news");
+const users = require("./routes/users");
+const auth = require("./routes/auth");
+const db = require("./models/db");
+
+if (!process.env.JWT_PRIVATE_KEY) {
+  console.error("JWT_PRIVATE_KEY not set. Exiting...");
+  process.exit(1);
+}
+
+const CLIENT_HOST = process.env.CLIENT_HOST || "localhost";
+const CLIENT_PORT = process.env.CLIENT_PORT || 5173;
+const SERVER_HOST = process.env.DB_HOST || "localhost";
+const SERVER_PORT = process.env.SERVER_PORT || 3000;
+
+const corsOptions = {
+  origin: CLIENT_HOST == "*" ? "*" : `http://${CLIENT_HOST}:${CLIENT_PORT}`,
+  optionsSuccessStatus: 200,
+};
+
+db.connect(SERVER_HOST);
+
+app.use(express.json());
+app.use(cors(corsOptions));
+app.use("/api/news", news);
+app.use("/api/users", users);
+app.use("/api/auth", auth);
+
+app.listen(SERVER_PORT, () => {
+  console.log(`Listening on port ${SERVER_PORT}...`);
+});
