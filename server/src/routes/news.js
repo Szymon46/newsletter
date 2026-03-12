@@ -1,21 +1,25 @@
 const express = require("express");
-const router = express.Router();
 const _ = require("lodash");
 
-const newsPiece = require("../models/newsPiece");
 const auth = require("../middleware/auth");
-const { User } = require("../models/user");
+const { getUser } = require("../models/user");
+const {
+  getNews,
+  validateNewsPiece,
+  createNewsPiece,
+  deleteNewsPiece,
+} = require("../models/newsPiece");
 
-// Returning all news
-router.get("/", async (req, res) => {
-  const news = await newsPiece.getNews();
+const router = express.Router();
+
+router.get("/", async (_, res) => {
+  const news = await getNews();
 
   res.send(news);
 });
 
-// Adding a single news piece
 router.post("/add", auth, async (req, res) => {
-  const user = await User.findOne({ username: req.user.username });
+  const user = await getUser(req.user.username);
 
   if (!user) {
     res
@@ -24,9 +28,7 @@ router.post("/add", auth, async (req, res) => {
     return;
   }
 
-  const { error } = newsPiece.validateNewsPiece(
-    _.pick(req.body, ["category", "text"])
-  );
+  const { error } = validateNewsPiece(_.pick(req.body, ["category", "text"]));
 
   if (error) {
     res.status(400).send(error.details[0].message);
@@ -34,16 +36,15 @@ router.post("/add", auth, async (req, res) => {
   }
 
   try {
-    await newsPiece.createNewsPiece(req.body.category, req.body.text);
+    await createNewsPiece(req.body.category, req.body.text);
     res.send({ success: true });
   } catch (err) {
     res.send({ success: false });
   }
 });
 
-// Deleting multiple news
 router.post("/del", auth, async (req, res) => {
-  const user = await User.findOne({ username: req.user.username });
+  const user = await getUser(req.user.username);
 
   if (!user) {
     res
@@ -54,7 +55,7 @@ router.post("/del", auth, async (req, res) => {
 
   try {
     for (const id of req.body.ids) {
-      await newsPiece.deleteNewsPiece(id);
+      await deleteNewsPiece(id);
     }
     res.send({ success: true });
   } catch (err) {
@@ -62,6 +63,5 @@ router.post("/del", auth, async (req, res) => {
   }
 });
 
-// TODO: Add updating news? (deleting then adding a new one)
-
 module.exports = router;
+// TODO: Add updating news? (deleting then adding a new one)

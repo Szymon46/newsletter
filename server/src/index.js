@@ -1,11 +1,17 @@
-const express = require("express");
-const app = express();
 const cors = require("cors");
+const dotenv = require("dotenv");
+const express = require("express");
+const swaggerUi = require("swagger-ui-express");
 
-const news = require("./routes/news");
-const users = require("./routes/users");
 const auth = require("./routes/auth");
-const db = require("./models/db");
+const db = require("./db");
+const news = require("./routes/news");
+const swaggerDocument = require("../swagger.json");
+const users = require("./routes/users");
+
+dotenv.config();
+
+const app = express();
 
 if (!process.env.JWT_PRIVATE_KEY) {
   console.error("JWT_PRIVATE_KEY not set. Exiting...");
@@ -25,6 +31,7 @@ const corsOptions = {
 db.connect(SERVER_HOST);
 
 app.use(express.json());
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors(corsOptions));
 app.use("/api/news", news);
 app.use("/api/users", users);
@@ -33,3 +40,5 @@ app.use("/api/auth", auth);
 app.listen(SERVER_PORT, () => {
   console.log(`Listening on port ${SERVER_PORT}...`);
 });
+
+// TODO: Handle errors in the routers, not in the models

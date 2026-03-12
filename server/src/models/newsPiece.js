@@ -1,5 +1,7 @@
-const mongoose = require("mongoose");
 const Joi = require("joi");
+const mongoose = require("mongoose");
+
+const typedefs = require("../typedefs");
 
 const newsPieceSchema = mongoose.Schema({
   category: String,
@@ -9,6 +11,12 @@ const newsPieceSchema = mongoose.Schema({
 
 const News = mongoose.model("News", newsPieceSchema);
 
+/**
+ *
+ * @param {string} category
+ * @param {string} text
+ * @returns {boolean}
+ */
 async function createNewsPiece(category, text) {
   const newsPiece = News({
     category,
@@ -25,16 +33,9 @@ async function createNewsPiece(category, text) {
   }
 }
 
-async function deleteNewsPiece(id) {
-  try {
-    await News.deleteOne({ _id: id });
-    return true;
-  } catch (err) {
-    console.error(`Could not delete the news piece: ${err}`);
-    return false;
-  }
-}
-
+/**
+ * @returns {Array.<NewsPiece>}
+ */
 async function getNews() {
   try {
     const news = await News.find().sort({ date: -1 });
@@ -45,6 +46,25 @@ async function getNews() {
   }
 }
 
+/**
+ * @param {string} id
+ * @returns {boolean}
+ */
+async function deleteNewsPiece(id) {
+  try {
+    await News.deleteOne({ _id: id });
+    return true;
+  } catch (err) {
+    console.error(`Could not delete the news piece: ${err}`);
+    return false;
+  }
+}
+
+/**
+ *
+ * @param {typedefs.NewsPieceDto} newsPiece
+ * @returns
+ */
 function validateNewsPiece(newsPiece) {
   const schema = Joi.object().keys({
     category: Joi.string().min(1).max(64).required(),
@@ -58,6 +78,5 @@ module.exports = {
   createNewsPiece,
   deleteNewsPiece,
   getNews,
-  News,
   validateNewsPiece,
 };

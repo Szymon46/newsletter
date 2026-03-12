@@ -1,25 +1,26 @@
 const express = require("express");
-const router = express.Router();
-const bcrypt = require("bcryptjs");
 
-const { User, validateUser } = require("../models/user");
+const { validateUser, getUser, isValidPassword } = require("../models/user");
+
+const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { error } = validateUser(req.body);
+  const { username, password } = req.body;
+  const { error } = validateUser({ username, password });
 
   if (error) {
     res.status(400).send(error.details[0].message);
     return;
   }
 
-  const user = await User.findOne({ username: req.body.username });
+  const user = await getUser(username);
 
   if (!user) {
     res.status(400).send("Invalid username or password");
     return;
   }
 
-  const validPassword = await bcrypt.compare(req.body.password, user.hash);
+  const validPassword = await isValidPassword(password, user.hash);
 
   if (!validPassword) {
     res.status(400).send("Invalid username or password");
