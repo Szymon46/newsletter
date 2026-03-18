@@ -40,5 +40,3 @@ app.use("/api/auth", auth);
 app.listen(SERVER_PORT, () => {
   console.log(`Listening on port ${SERVER_PORT}...`);
 });
-
-// TODO: Handle errors in the routers, not in the models

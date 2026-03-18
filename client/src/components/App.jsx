@@ -8,8 +8,6 @@ import DashboardUsers from './dashboard/DashboardUsers'
 import LoginForm from './menu/Menu'
 import News from './news/News'
 
-// TODO: Move the logout button
-// TODO: Change style of the news creating form
 // TODO: Show current time and ???weather
 
 export default function App() {

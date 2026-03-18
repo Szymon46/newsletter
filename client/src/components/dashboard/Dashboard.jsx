@@ -32,16 +32,7 @@ export default function Dashboard() {
   return (
     <div className="grid h-screen w-screen grid-cols-[100%] grid-rows-[10%_90%] font-semibold">
       <div className="relative col-start-1 col-end-2 row-start-1 row-end-2 flex items-center bg-green-800 shadow-md shadow-gray-400">
-        <button
-          onClick={handleLogout}
-          className="absolute left-[2%] h-13 w-13 cursor-pointer rounded-full bg-emerald-900 hover:bg-emerald-800"
-        >
-          <FontAwesomeIcon
-            icon="fa-solid fa-right-from-bracket"
-            className="fa-xl text-gray-100"
-          />
-        </button>
-        <h1 className="absolute left-[10%] text-5xl text-gray-100">
+        <h1 className="absolute left-[3%] text-5xl text-gray-100">
           Panel zarządzania
         </h1>
         <div className="group absolute top-1/4 right-[3%] z-10 w-40 rounded-md bg-green-900 p-4 text-center text-xl text-gray-100 hover:bg-green-900">
@@ -56,6 +47,13 @@ export default function Dashboard() {
           >
             Zmiana hasła
           </Link>
+          <hr className="mt-2 mb-2 hidden rounded-md border-2 border-emerald-800 group-hover:block" />
+          <button
+            onClick={handleLogout}
+            className="hidden w-full cursor-pointer group-hover:block hover:text-zinc-400"
+          >
+            Wyloguj się
+          </button>
         </div>
       </div>
 

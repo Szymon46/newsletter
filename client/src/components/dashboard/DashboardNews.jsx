@@ -189,7 +189,7 @@ function DashboardForm({ setUpdate, setIsFormOpen }) {
   }
 
   return (
-    <div className="item absolute bottom-0 left-1/2 flex h-1/2 w-1/3 -translate-x-1/2 flex-col items-center justify-end rounded-t-xl bg-zinc-200 text-gray-800">
+    <div className="item absolute bottom-0 left-1/2 flex h-1/2 w-1/3 -translate-x-1/2 flex-col items-center justify-end rounded-t-xl border border-gray-400 bg-zinc-100 text-gray-800">
       <div className="flex h-9/10 w-4/5 flex-col">
         <p>Kategoria:</p>
         <input
