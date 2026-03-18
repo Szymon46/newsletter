@@ -4,6 +4,7 @@ export default function Input({
   onChange,
   className,
   isPassword,
+  name,
 }) {
   return (
     <>
@@ -12,7 +13,7 @@ export default function Input({
         <input
           className={`mb-5 h-10 w-full rounded-sm border-2 border-gray-500 p-1 ${className}`}
           type={isPassword ? 'password' : 'text'}
-          name="username"
+          name={name}
           value={value}
           onChange={(e) => {
             onChange(e.target.value)

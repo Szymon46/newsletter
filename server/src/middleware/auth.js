@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
+const { isAdmin } = require("../models/user");
 
 function auth(req, res, next) {
   const token = req.header("x-auth-token");
   if (!token) {
-    res.status(401).send("Access denied. No token found.");
+    res.status(401).send({ error: "Unauthorized", errcode: 1 });
     return;
   }
 
@@ -12,8 +13,17 @@ function auth(req, res, next) {
     req.user = tokenData;
     next();
   } catch (err) {
-    res.status(400).send("Invalid token.");
+    res.status(400).send({ error: "Invalid token", errcode: 2 });
   }
 }
 
-module.exports = auth;
+function adminAuth(req, res, next) {
+  if (!isAdmin(req.user.username)) {
+    res.status(403).send({ error: "Forbidden", errcode: 3 });
+    return;
+  }
+
+  next();
+}
+
+module.exports = { auth, adminAuth };

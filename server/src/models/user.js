@@ -26,7 +26,7 @@ const UserModel = mongoose.model("User", userSchema);
  * @param {string} password
  */
 async function createUser(username, password) {
-  const salt = await bcrypt.genSalt(16);
+  const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
   const newUser = UserModel({
@@ -34,7 +34,7 @@ async function createUser(username, password) {
     hash,
   });
 
-  await newUser.save();
+  return await newUser.save();
 }
 
 /**
@@ -57,7 +57,7 @@ async function getUser(username) {
  * @param {string} newPassword
  */
 async function updatePassword(user, newPassword) {
-  const salt = await bcrypt.genSalt(16);
+  const salt = await bcrypt.genSalt(10);
   const newHash = await bcrypt.hash(newPassword, salt);
 
   await UserModel.findOneAndUpdate(
@@ -75,11 +75,11 @@ async function deleteUser(id) {
 }
 
 /**
- * @param {typedefs.User} user
+ * @param {string} username
  * @returns {boolean}
  */
-async function isAdmin(user) {
-  return user.username === "admin" ? true : false;
+async function isAdmin(username) {
+  return username === "admin" ? true : false;
 }
 
 /**

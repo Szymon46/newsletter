@@ -24,26 +24,15 @@ async function createNewsPiece(category, text) {
     date: Date.now(),
   });
 
-  try {
-    await newsPiece.save();
-    return true;
-  } catch (err) {
-    console.error(`Could not add the news piece: ${err}`);
-    return false;
-  }
+  return await newsPiece.save();
 }
 
 /**
  * @returns {Array.<NewsPiece>}
  */
 async function getNews() {
-  try {
-    const news = await News.find().sort({ date: -1 });
-    return news;
-  } catch (err) {
-    console.error(`Could not return the news: ${err}`);
-    return [];
-  }
+  const news = await News.find().sort({ date: -1 });
+  return news;
 }
 
 /**
@@ -51,17 +40,10 @@ async function getNews() {
  * @returns {boolean}
  */
 async function deleteNewsPiece(id) {
-  try {
-    await News.deleteOne({ _id: id });
-    return true;
-  } catch (err) {
-    console.error(`Could not delete the news piece: ${err}`);
-    return false;
-  }
+  await News.deleteOne({ _id: id });
 }
 
 /**
- *
  * @param {typedefs.NewsPieceDto} newsPiece
  * @returns
  */

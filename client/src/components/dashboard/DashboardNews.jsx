@@ -5,6 +5,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 
 import formatDate from '../../formatDate'
 import { Link } from 'react-router-dom'
+import * as api from '../../api'
 
 library.add(fas)
 
@@ -17,20 +18,11 @@ export default function DashboardNews() {
 
   useEffect(() => {
     async function getNews() {
-      const res = await fetch(
-        `http://${import.meta.env.VITE_SERVER_HOST || 'localhost'}:${import.meta.env.VITE_SERVER_PORT || 3000}/api/news`
-      )
+      const data = await api.getNews()
 
-      const data = await res.json()
+      setNews(data.news)
 
-      const parsedData = data.map((d) => ({
-        ...d,
-        date: new Date(d.date),
-      }))
-
-      setNews(parsedData)
-
-      setBoxList(parsedData.map((item) => ({ id: item._id, checked: false })))
+      setBoxList(data.news.map((item) => ({ id: item._id, checked: false })))
     }
 
     getNews()
@@ -76,30 +68,9 @@ export default function DashboardNews() {
       return
     }
 
-    const res = await fetch(
-      `http://${import.meta.env.VITE_SERVER_HOST || 'localhost'}:${import.meta.env.VITE_SERVER_PORT || 3000}/api/news/del`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': localStorage.getItem('token'),
-        },
-        body: JSON.stringify({ ids }),
-      }
-    )
+    const token = localStorage.getItem('token')
 
-    if (!res.ok) {
-      console.log('Something went wrong')
-      console.log(res)
-      return
-    }
-
-    const data = await res.json()
-
-    if (!data.success) {
-      console.log('Could not delete the news')
-      return
-    }
+    api.deleteNews(ids, token)
 
     setAllBox({ checked: false })
     setUpdate((u) => u + 1)
@@ -181,10 +152,8 @@ export default function DashboardNews() {
           </tbody>
         </table>
       </div>
-      {isFormOpen ? (
+      {isFormOpen && (
         <DashboardForm setUpdate={setUpdate} setIsFormOpen={setIsFormOpen} />
-      ) : (
-        ''
       )}
     </>
   )
@@ -211,24 +180,9 @@ function DashboardForm({ setUpdate, setIsFormOpen }) {
       return
     }
 
-    const res = await fetch(
-      `http://${import.meta.env.VITE_SERVER_HOST}:${import.meta.env.VITE_SERVER_PORT}/api/news/add`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': localStorage.getItem('token'),
-        },
-        body: JSON.stringify({
-          category: category,
-          text: text,
-        }),
-      }
-    )
+    const token = localStorage.getItem('token')
 
-    const data = await res.json()
-
-    console.log(data)
+    api.createNews(category, text, token)
 
     setIsFormOpen(false)
     setUpdate((u) => u + 1)

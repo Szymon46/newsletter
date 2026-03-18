@@ -4,6 +4,10 @@
  * @property {string} username
  * @property {string} hash
  *
+ * @typedef UserAuthData
+ * @type {object}
+ * @property {string} username
+ *
  * @typedef NewsPiece
  * @type {object}
  * @property {string} category

@@ -8,17 +8,9 @@ import DashboardUsers from './dashboard/DashboardUsers'
 import LoginForm from './menu/Menu'
 import News from './news/News'
 
-// 1. HTTPS???
-// 2.
-// Restructure the whole frontend to proper folders and create components where they're useful
-// Add useful comments
-// Change variables' names
-// 3.
-// Move the logout button
-// Add password changing
-// Add dropdown (where the username is showed) with logout option and password change option
-//
-// ubuntu - 100.122.20.126, 172.16.112.227
+// TODO: Move the logout button
+// TODO: Change style of the news creating form
+// TODO: Show current time and ???weather
 
 export default function App() {
   return (

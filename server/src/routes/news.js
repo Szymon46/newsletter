@@ -1,8 +1,6 @@
 const express = require("express");
-const _ = require("lodash");
 
-const auth = require("../middleware/auth");
-const { getUser } = require("../models/user");
+const { auth } = require("../middleware/auth");
 const {
   getNews,
   validateNewsPiece,
@@ -10,58 +8,47 @@ const {
   deleteNewsPiece,
 } = require("../models/newsPiece");
 
+// /api/news
 const router = express.Router();
 
-router.get("/", async (_, res) => {
-  const news = await getNews();
+router.post("/", auth, async (req, res) => {
+  const { category, text } = req.body;
 
-  res.send(news);
-});
-
-router.post("/add", auth, async (req, res) => {
-  const user = await getUser(req.user.username);
-
-  if (!user) {
-    res
-      .status(401)
-      .send("Access denied. User does not exist or is not logged in.");
-    return;
-  }
-
-  const { error } = validateNewsPiece(_.pick(req.body, ["category", "text"]));
+  const { error } = validateNewsPiece({ category, text });
 
   if (error) {
-    res.status(400).send(error.details[0].message);
+    res.status(400).send({ error: error.details[0].message, errcode: 6 });
     return;
   }
 
   try {
-    await createNewsPiece(req.body.category, req.body.text);
-    res.send({ success: true });
+    const newsPiece = await createNewsPiece(req.body.category, req.body.text);
+    res.status(201).send({ newsPiece });
   } catch (err) {
-    res.send({ success: false });
+    res.status(500).send({ error: "Internal server error", errcode: 7 });
   }
 });
 
-router.post("/del", auth, async (req, res) => {
-  const user = await getUser(req.user.username);
-
-  if (!user) {
-    res
-      .status(401)
-      .send("Access denied. User does not exist or is not logged in.");
-    return;
+router.get("/", async (_, res) => {
+  try {
+    const news = await getNews();
+    res.send({ news });
+  } catch (err) {
+    res.status(500).send({ error: "Internal server error", errcode: 7 });
   }
+});
+
+router.delete("/", auth, async (req, res) => {
+  const { ids } = req.body;
 
   try {
-    for (const id of req.body.ids) {
+    for (const id of ids) {
       await deleteNewsPiece(id);
     }
-    res.send({ success: true });
+    res.send({});
   } catch (err) {
-    res.status(500).send({ success: false });
+    res.status(500).send({ error: "Internal server error", errcode: 7 });
   }
 });
 
 module.exports = router;
-// TODO: Add updating news? (deleting then adding a new one)

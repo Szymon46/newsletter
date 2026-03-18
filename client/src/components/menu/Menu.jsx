@@ -1,65 +1,55 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import Input from '../Input'
+import * as api from '../../api'
 
-// TODO: Add a spinning wheel on the button when logging in
 export default function LoginForm() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [failMessage, setFailMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
   const navigate = useNavigate()
 
   async function handleSubmit(e) {
     e.preventDefault()
 
+    setIsLoading(true)
+
     if (!(username && password)) {
       setPassword('')
       setUsername('')
       setFailMessage('Login i hasło nie mogą być puste')
-      console.error("Login and password can't be empty")
+      setIsLoading(false)
       return
     }
 
-    const res = await fetch(
-      `http://${
-        import.meta.env.VITE_SERVER_HOST || 'localhost'
-      }:${import.meta.env.VITE_SERVER_PORT || 3000}/api/auth`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username.toLowerCase(),
-          password: password,
-        }),
+    try {
+      const { data, token } = await api.auth(username, password)
+      setUsername('')
+      setPassword('')
+
+      localStorage.setItem('username', data.username)
+      localStorage.setItem('token', token)
+
+      setFailMessage('')
+
+      navigate('/dashboard')
+    } catch (err) {
+      if (err instanceof api.ApiError) {
+        setFailMessage(err.message)
       }
-    )
-
-    setUsername('')
-    setPassword('')
-
-    if (!res.ok) {
-      console.error('Incorrect login or password')
-      setFailMessage('Niepoprawny login lub hasło')
-      return
+    } finally {
+      setIsLoading(false)
     }
-
-    const data = await res.json()
-    const token = res.headers.get('x-auth-token')
-
-    localStorage.setItem('username', data.username)
-    localStorage.setItem('token', token)
-
-    setFailMessage('')
-    navigate('/dashboard')
   }
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center bg-green-800 font-semibold">
       <div className="flex h-4/5 w-4/5 items-center justify-evenly rounded-3xl bg-zinc-300">
-        <div className="h-4/5 w-1/3 rounded-2xl bg-gray-100 text-center">
+        <div className="h-4/5 w-1/3 rounded-2xl bg-gray-100 text-center shadow-md shadow-gray-400">
           <h1 className="mt-20 mb-5 text-4xl">Chcesz zobaczyć aktualności?</h1>
           <p className="text-xl">
             Kliknij{' '}
@@ -71,15 +61,20 @@ export default function LoginForm() {
             </Link>
           </p>
         </div>
-        <div className="flex h-4/5 w-1/3 flex-col items-center justify-center rounded-2xl bg-gray-100">
+        <div className="flex h-4/5 w-1/3 flex-col items-center justify-center rounded-2xl bg-gray-100 shadow-md shadow-gray-400">
           <h1 className="mt-20 mb-5 text-center text-4xl">
             Logowanie do panelu zarządzania
           </h1>
           <form className="flex h-4/5 w-1/2 flex-col">
             <Input label="Login" value={username} onChange={setUsername} />
-            <Input label="Hasło" value={password} onChange={setPassword} />
+            <Input
+              label="Hasło"
+              value={password}
+              onChange={setPassword}
+              isPassword
+            />
             {failMessage !== '' ? (
-              <p className="mb-3 text-red-500">{failMessage}</p>
+              <p className="mb-3 self-center text-red-500">{failMessage}</p>
             ) : (
               ''
             )}
@@ -87,7 +82,14 @@ export default function LoginForm() {
               onClick={handleSubmit}
               className="h-10 w-3/4 cursor-pointer self-center rounded-xl bg-green-800 text-gray-50 hover:bg-green-900"
             >
-              Zaloguj
+              {isLoading ? (
+                <FontAwesomeIcon
+                  icon="fa-solid fa-arrows-rotate"
+                  className="animate-spin"
+                />
+              ) : (
+                'Zaloguj'
+              )}
             </button>
           </form>
         </div>

@@ -17,7 +17,7 @@ async function connect(hostname) {
 }
 
 async function init() {
-  const adminExists = (await getUser("admin")).length === 0 ? false : true;
+  const adminExists = (await getUser("admin")) ? true : false;
 
   if (adminExists) {
     return;
