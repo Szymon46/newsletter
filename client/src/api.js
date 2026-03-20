@@ -1,5 +1,6 @@
 const SERVER_HOST = import.meta.env.VITE_SERVER_HOST || 'localhost'
 const SERVER_PORT = import.meta.env.VITE_SERVER_PORT || 3000
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY
 
 class ApiError extends Error {}
 
@@ -152,6 +153,21 @@ async function updatePassword(oldPassword, newPassword, token) {
   }
 }
 
+// weather API
+async function getWeather() {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?lat=54&lon=19&appid=${WEATHER_API_KEY}&lang=pl&units=metric`
+  )
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    throw new ApiError('Nie można pobrać danych pogody')
+  }
+
+  return data
+}
+
 export {
   auth,
   createNews,
@@ -160,5 +176,6 @@ export {
   updatePassword,
   createUser,
   getUsers,
+  getWeather,
   ApiError,
 }

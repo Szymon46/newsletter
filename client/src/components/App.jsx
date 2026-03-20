@@ -7,10 +7,20 @@ import DashboardPassword from './dashboard/DashboardPassword'
 import DashboardUsers from './dashboard/DashboardUsers'
 import LoginForm from './menu/Menu'
 import News from './news/News'
+import { useEffect } from 'react'
+import * as api from '../api'
 
-// TODO: Show current time and ???weather
+// TODO: Add a burger icon for smaller screens and make the form the size of the screen when adding a new element. Order the main menu vertically too
 
 export default function App() {
+  useEffect(() => {
+    async function getWeather() {
+      api.getWeather()
+    }
+
+    getWeather()
+  })
+
   return (
     <BrowserRouter>
       <Routes>

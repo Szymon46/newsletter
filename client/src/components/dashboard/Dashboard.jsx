@@ -38,7 +38,10 @@ export default function Dashboard() {
         <div className="group absolute top-1/4 right-[3%] z-10 w-40 rounded-md bg-green-900 p-4 text-center text-xl text-gray-100 hover:bg-green-900">
           <p className="capitalize">
             {username} <FontAwesomeIcon icon="fa-solid fa-user" />
-            <FontAwesomeIcon icon="fa-solid fa-angle-down" />
+            <FontAwesomeIcon
+              icon="fa-solid fa-angle-down"
+              className="transition-transform duration-200 ease-in-out group-hover:rotate-180"
+            />
           </p>
           <hr className="mt-2 mb-2 hidden rounded-md border-2 border-emerald-800 group-hover:block" />
           <Link
