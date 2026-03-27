@@ -2,6 +2,3 @@ node_modules
 dist
 Dockerfile
 .dockerignore
-# docker build -t newsletter-client .
-# docker run -p 8080:80
-# .env

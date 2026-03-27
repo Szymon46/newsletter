@@ -9,7 +9,15 @@ const news = require("./routes/news");
 const swaggerDocument = require("../swagger.json");
 const users = require("./routes/users");
 
+// TODO: Fix docker compose env vars
+// TODO: Add db authentiction
+// TODO: Logging HTTP requests
+// TODO: Env variable for debugging info
+// TODO: API docs
+
+// if (process.env.NODE_ENV !== "production") {
 dotenv.config();
+// }
 
 const app = express();
 

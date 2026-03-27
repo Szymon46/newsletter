@@ -70,7 +70,7 @@ export default function DashboardNews() {
 
     const token = localStorage.getItem('token')
 
-    api.deleteNews(ids, token)
+    await api.deleteNews(ids, token)
 
     setAllBox({ checked: false })
     setUpdate((u) => u + 1)
@@ -182,7 +182,7 @@ function DashboardForm({ setUpdate, setIsFormOpen }) {
 
     const token = localStorage.getItem('token')
 
-    api.createNews(category, text, token)
+    await api.createNews(category, text, token)
 
     setIsFormOpen(false)
     setUpdate((u) => u + 1)
